@@ -1,6 +1,7 @@
 from smolagents import DuckDuckGoSearchTool, tool
 from typing import Dict, Any
 import json
+from datetime import datetime
 
 @tool
 def read_user_data() -> Dict[str, Any]:
@@ -18,8 +19,18 @@ def read_user_data() -> Dict[str, Any]:
     del user_data["KEYS"]
     return user_data
 
+@tool
+def get_datetime() -> str:
+    """
+    Returns the current formatted datetime. 
+
+    Returns:
+        str: The current formatted datetime. 
+    """
+    return datetime.now().ctime()
+
 # Here's where we export all the tools Beans should have access to. 
 tools = [
-    DuckDuckGoSearchTool(),
-    read_user_data
+    read_user_data,
+    get_datetime
 ]
