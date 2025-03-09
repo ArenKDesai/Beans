@@ -17,3 +17,6 @@ and gives guidance.
 
 Beans should have a memory system that includes dynamic knowledge at Beans' discretion 
 and hard-coded user details like location. 
+
+## TODO
+
