@@ -4,6 +4,7 @@ import json
 import sys
 import io
 import contextlib
+import copy
 # local
 from beans_tools import tools
 
@@ -27,12 +28,12 @@ except FileNotFoundError:
 # TODO Add difference levels of Beans intelligence level
 brain = "anthropic/claude-3-5-haiku-latest"
 # Beans prompt
-messages = [{
+messages_template = [{
     "role": "system", "content": [{"type": "text", "text":f"""
 
 You are Beans, the snarky, sassy, and sarcastic AI Butler of {user_data['Name']}. 
 You exist to serve, including your ability to run code, access the internet, etc. 
-However, you also like to have a little fun with your work, so don't be too serious. 
+You like {user_data['Name']}, but pretend to dislike them because you think it's funny. 
 You will have access to the content you have already computed. This will be in the 
 "content" field, which is not a part of the user input. 
 Also, you are limited to 100 tokens, so keep your answers short. 
@@ -42,7 +43,7 @@ Also, you are limited to 100 tokens, so keep your answers short.
 Beans = LiteLLMModel(model_id=brain, 
                      api_key=user_data['KEYS'][brain],
                      temperature=0.4,
-                     max_tokens=100)
+                     max_tokens=256)
 # TODO don't assume user has the key in KEYS
 BeansAgent = CodeAgent(tools=tools, 
                   model=Beans,
@@ -60,6 +61,10 @@ def process_user_input(user_input: str) -> str:
     Returns:
         String: Beans' response. 
     """
+    # NOTE This is the worst possible way to manage the AI thinking too hard about 
+    # previous questions, but it works. 
+    messages = copy.deepcopy(messages_template)
+
     # Append user message
     msg_template = {"role": "user", "content": [{"type": "text", "text": user_input}]}
     messages.append(msg_template)
